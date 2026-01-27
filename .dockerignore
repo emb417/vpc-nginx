@@ -1,3 +1,12 @@
+# Ignore git files
+.git
+.gitignore
 
-Dockerfile
-.dockerignore
+# Ignore github files
+.github/
+
+# Ignore log files
+*.log
+
+# Ignore macOS specific files
+.DS_Store

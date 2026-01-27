@@ -1,11 +1,47 @@
-# syntax docker/dockerfile:1
+# Use the official Nginx base image. The "alpine" variant is very small.
+FROM nginx:1.29.4-alpine
 
-FROM nginx
-COPY nginx.conf /etc/nginx/nginx.conf
+ENV TZ="America/Los_Angeles"
 
-EXPOSE 7080
-EXPOSE 6080
-EXPOSE 5080
-EXPOSE 4080
+# Install the 'inotify-tools' package to monitor changes in the /etc/letsencrypt/live directory
+# This is required to reload the Nginx configuration when the certificate files change
+RUN apk add --no-cache inotify-tools
 
-CMD ["nginx", "-g", "daemon off;"]
+# Add the 'www-data' user to the existing 'www-data' group.
+RUN adduser -S www-data -G www-data
+
+# Create the /var/cache/nginx directories with correct permissions
+RUN mkdir -p /var/cache/nginx/client_temp \
+    && chown -R www-data:www-data /var/cache/nginx
+
+# Create a dedicated directory for Nginx's PID file and give it the correct permissions.
+RUN mkdir -p /var/run/nginx \
+    && chown -R www-data:www-data /var/run/nginx
+
+# Remove the default Nginx configuration file. This is an important step
+# to ensure our custom configuration is the only one used.
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copy our custom main nginx.conf file into the container.
+# This file will act as the entry point for all other configurations.
+COPY ./nginx.conf /etc/nginx/nginx.conf
+
+# Create the sites-available and sites-enabled directories inside the container.
+RUN mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
+
+# Copy our site-specific configuration file into the sites-available directory.
+COPY ./sites-available/default.conf /etc/nginx/sites-available/default.conf
+
+# Create a symbolic link to enable the default site.
+RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
+
+# Set the user to 'www-data' so Nginx runs with the correct permissions.
+USER www-data
+
+# Expose port 80, 443, and 8443.
+EXPOSE 80
+EXPOSE 443
+EXPOSE 8443
+
+# Start Nginx
+CMD ["/bin/sh", "-c", "inotifywait -m /etc/letsencrypt/live -e modify | while read; do nginx -s reload; done & nginx -g 'daemon off;'"]
