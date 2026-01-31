@@ -26,14 +26,12 @@ RUN rm /etc/nginx/conf.d/default.conf
 # This file will act as the entry point for all other configurations.
 COPY ./nginx.conf /etc/nginx/nginx.conf
 
-# Create the sites-available and sites-enabled directories inside the container.
-RUN mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
+# Create the includes directory inside the container.
+RUN mkdir -p /etc/nginx/conf.d/includes
 
-# Copy our site-specific configuration file into the sites-available directory.
-COPY ./sites-available/default.conf /etc/nginx/sites-available/default.conf
-
-# Create a symbolic link to enable the default site.
-RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
+# Copy our custom configuration files into the container.
+COPY ./conf.d/includes/* /etc/nginx/conf.d/includes/.
+COPY ./conf.d/*.conf /etc/nginx/conf.d/.
 
 # Set the user to 'www-data' so Nginx runs with the correct permissions.
 USER www-data
