@@ -35,4 +35,4 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/vpc-nginx:refactor
             ${{ secrets.DOCKERHUB_USERNAME }}/vpc-nginx:${{ github.sha }}
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
