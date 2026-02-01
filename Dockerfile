@@ -36,10 +36,16 @@ COPY ./conf.d/*.conf /etc/nginx/conf.d/.
 # Set the user to 'www-data' so Nginx runs with the correct permissions.
 USER www-data
 
-# Expose port 80, 443, and 8443.
+# Expose port 80 and 443.
 EXPOSE 80
 EXPOSE 443
-EXPOSE 8443
 
 # Start Nginx
-CMD ["/bin/sh", "-c", "inotifywait -m /etc/letsencrypt/live -e modify | while read; do nginx -s reload; done & nginx -g 'daemon off;'"]
+CMD ["/bin/sh", "-c", "\
+    nginx -g 'daemon off;' & \
+    NGINX_PID=$!; \
+    inotifywait -m -e modify,create,move,delete /etc/letsencrypt/ --recursive | \
+    while read; do \
+    nginx -s reload; \
+    done \
+    "]
