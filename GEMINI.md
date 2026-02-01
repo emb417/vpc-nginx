@@ -19,7 +19,7 @@ The configuration is modular and organized within `/etc/nginx/`:
 
 - `nginx.conf`: The main entry point. Loads server blocks based on the environment (e.g., `servers-public.conf` for production, `servers-dev.conf` for local).
 - `conf.d/`: Contains environment-specific server blocks:
-  - `servers-public.conf`: Production config with SSL (ports 443, 8443).
+  - `servers-public.conf`: Production config with SSL (ports 443).
   - `servers-dev.conf`: Local development config (port 80).
   - `servers-aws.conf`: Specific config for AWS EC2 instances.
 - `conf.d/includes/`: Reusable configuration snippets:
