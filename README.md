@@ -21,21 +21,19 @@ To use this image, you will typically run it via `docker-compose` as part of the
 
 Refer to the `README.md` in the `vpc-compose` repository for instructions on how to start the full application stack.
 
-### To build the image manually
-
-If you need to build the image separately (e.g., for testing or CI/CD), you can use the following commands from this repository's root directory:
-
-```bash
-docker build -t ericfaris/nginx:latest .
-docker push ericfaris/nginx:latest
-```
-
 ## Configuration
 
-Nginx configurations are managed in the `sites-available` directory and symlinked to `sites-enabled`.
+The Nginx configuration is modular and organized within `/etc/nginx/` inside the container:
 
-- **`sites-available/default.conf`**: This is the configuration for your production environment, including SSL settings and the correct `proxy_pass` directives for your public domains.
-- **`sites-available/default-local.conf`**: This is a simplified configuration for local development. It uses plain HTTP and a `localhost` server name.
-- **`nginx.conf`**: The main Nginx configuration file.
-
-To update the Nginx configuration, modify the files in `sites-available` and then rebuild and push the Docker image to your container registry.
+- `nginx.conf`: The main entry point, loading server blocks based on the environment.
+- `conf.d/`: Contains environment-specific server blocks:
+  - `servers-public.conf`: Production config with SSL (ports 443, 8443).
+  - `servers-dev.conf`: Local development config (port 80).
+  - `servers-aws.conf`: Specific configuration for AWS EC2 instances.
+  - `servers-internal.conf`: Configuration for internal services not exposed publicly.
+- `conf.d/includes/`: Reusable configuration snippets:
+  - `upstream-vars.conf`: Defines variables for backend services.
+  - `routes-vpc.conf`: Routing for `/vpc/*` endpoints.
+  - `routes-vps.conf`: Routing for `/vps/*` endpoints.
+  - `proxy-common.conf`: Shared proxy settings (timeouts, headers).
+  - `bot-dropper.conf`: Logic to filter unwanted bot traffic.
