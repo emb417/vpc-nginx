@@ -3,3 +3,6 @@
 
 # Ignore env files
 *.env
+
+# Ignore test file
+test-nginx-security.sh
