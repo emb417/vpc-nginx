@@ -31,6 +31,7 @@ RUN mkdir -p /etc/nginx/conf.d/includes
 
 # Copy our custom configuration files into the container.
 COPY ./conf.d/includes/* /etc/nginx/conf.d/includes/.
+COPY ./conf.d/maps/* /etc/nginx/conf.d/maps/.
 COPY ./conf.d/*.conf /etc/nginx/conf.d/.
 
 # Set the user to 'www-data' so Nginx runs with the correct permissions.
