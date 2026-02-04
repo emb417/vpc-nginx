@@ -25,7 +25,7 @@ The configuration is modular and organized within `/etc/nginx/`:
 - `conf.d/includes/`: Reusable configuration snippets:
   - `upstream-vars.conf`: Defines variables for backend services (e.g., `$vpc_api`, `$vpc_next`).
   - `routes-vpc.conf`: Routing for `/vpc/*` (includes CORS for `vpinhub.github.io`).
-  - `routes-vps.conf`: Routing for `/vps/*`.
+  - `routes-vps.conf`: Routing for `/vps/*` to the `vpc-data` service.
   - `proxy-common.conf`: Shared proxy settings (timeouts, headers).
   - `bot-dropper.conf`: Logic to drop unwanted bot traffic.
 
